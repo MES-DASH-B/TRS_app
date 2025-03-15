@@ -80,19 +80,3 @@ fig101 = px.bar(df_selection, x="Machine",y="Durées (m)",color="Arrêts", templ
 st.write(fig101)
 #-----------------------------------------------------------------------------
 
-df_a= pd.read_excel(
-    io='CALCUL_TRS.xlsx',
-    engine='openpyxl',
-    sheet_name='Arrêts',
-    skiprows=4,
-    usecols='B:H',
-    nrows=100,
-)
-
-st.sidebar.header("Filitre période:")
-pds= st.sidebar.multiselect(
-   "Choisir périod d'arret:",
-    options = df_a["pds"].unique(),
-    default = df_a["pds"].unique())
-df_a_selection = df_a.query("pds == @pds")
-st.dataframe(df_a_selection)
