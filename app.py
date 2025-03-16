@@ -2,14 +2,19 @@ import streamlit as st
 import pandas as pd 
 import plotly.express as px
 from streamlit_option_menu import option_menu
+from PIL import Image
+from millify import millify
 
 
 
 
 st.set_page_config (page_title= "POINT TRS", page_icon="📈", layout="wide")
-st.header ("Analyse TRS SHINKO & MS20")
-st.title ("mon premier titre streamlit 👹")
-st.write ("Bienvenu chez moi")
+image = Image.open('image.jpg') 
+st.image(image, width = 250)
+
+#st.header ("Analyse TRS SHINKO & MS20")
+st.title ("Analyse Taux de Rendement Synthétique")
+st.subheader ("Accueil")
 
 df= pd.read_excel(
     io='CALCUL_TRS.xlsx',
@@ -32,25 +37,74 @@ st.sidebar.header("Filitre référance:")
 
 )
 df_selection = df.query("Équipe == @Équipe")
-st.dataframe(df_selection)
+with st.expander("Data preview"):
+    st.dataframe(df_selection)
 
-st.title(":bar_chart: Suivis TRS")
+#st.title(":bar_chart: Suivis TRS")
 st.markdown("##")
 
-total_quantité = int(df_selection["Durées (m)"].sum())
-moyenne = round(df_selection["Durées (m)"].mean(),1)
-#star_rating = ":star:" * int(round(moyenne, 0))
 
-left_colum, middle_colum, right_colum = st.columns(3)
-with left_colum:
-    st.subheader("Total Quantité:")
-    st.subheader(f"Pièces: {total_quantité:,}")
-with middle_colum:
-    st.subheader("Moyenne Quantité:")
-    st.subheader(f"Pièces: {moyenne:,}")
-with right_colum:
-    st.subheader("Average sales per")
 
+#___________________________
+def load_css(file_name):
+    with open(file_name, "r") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# Load the CSS file
+load_css("style.css")
+
+Nombr_arrets= int(df_selection["Arrêts"].count())
+Durées_arrets= int(df_selection["Durées (h)"].sum())
+Durée_arret_jr = round(int(Durées_arrets/24),1)
+moyenne = round(df_selection["Durées (h)"].mean(),1)
+
+
+# Arrange metrics in columns with the blue background style
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.markdown(
+        f"""
+        <div class="metric-container">
+            <p class="metric-label">Nombre total des arrets</p>
+            <p class="metric-value">{Nombr_arrets}</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with col2:
+    st.markdown(
+        f"""
+        <div class="metric-container">
+            <p class="metric-label">Durées total des arrets</p>
+            <p class="metric-value">{Durées_arrets} h</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with col3:
+    st.markdown(
+        f"""
+        <div class="metric-container">
+            <p class="metric-label">Dureée des arrets en jours</p>
+            <p class="metric-value">{Durée_arret_jr} Jours</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+with col4:
+    st.markdown(
+        f"""
+        <div class="metric-container">
+            <p class="metric-label">Durée moyenne d'un arret</p>
+            <p class="metric-value">{moyenne} h</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    
 st.markdown("----") 
 
 with st.sidebar:
