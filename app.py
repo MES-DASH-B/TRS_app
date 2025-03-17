@@ -155,7 +155,7 @@ figpareto.add_scatter(x=df1["Arrêts"], y=df1["PC"], mode="lines+markers+text",
 figpareto.update_layout(
     title="Pareto Diagram of Downtime Causes",
     yaxis=dict(title="Durations (minutes)", side="left"),
-    yaxis2=dict(title="Cumulative Percentage", overlaying="y", side="right", range=[0, 110]),
+    yaxis2=dict(title="CP", overlaying="y", side="right", range=[0, 110]),
     xaxis=dict(title="Arrêts", tickangle=-45),
     legend=dict(title="Legend"), 
     template="plotly_white"
