@@ -22,7 +22,7 @@ df= pd.read_excel(
     sheet_name='Arrêts',
     skiprows=4,
     usecols='B:H',
-    nrows=200,
+    nrows=74,
 )
 
 
@@ -37,8 +37,8 @@ st.sidebar.header("Filitre référance:")
 
 )
 df_selection = df.query("Équipe == @Équipe")
-with st.expander("Data preview"):
-    st.dataframe(df_selection)
+#with st.expander("Data preview"):
+#    st.dataframe(df_selection)
 
 #st.title(":bar_chart: Suivis TRS")
 st.markdown("##")
@@ -145,7 +145,7 @@ df1= pd.read_excel(
 df1["PC"] = (df1["PC"] * 100).round(0).astype(int)
 
 figpareto = px.bar(df1, x="Arrêts", y="Durées (m)", text="Durées (m)", 
-             labels={"Durées (m)": "Durations (minutes)", "Arrêts": "Causes of Downtime"},
+             labels={"Durées (m)": "Durée arrêts  (minutes)", "Arrêts": "Causes of Downtime"},
              color_discrete_sequence=px.colors.sequential.Blugrn_r)
 figpareto.add_scatter(x=df1["Arrêts"], y=df1["PC"], mode="lines+markers+text", 
                 name="Cumulative %", text=df1["PC"], textposition="top center",
@@ -176,7 +176,6 @@ with st.sidebar:
                 "nav-link-selected": {"background-color": "red"},})
 
 if selected == "Secteur Traction/Torsion" :
-    st.error (f":black_circle: INDICATEURS MAINTENANCE ENTREPRISE. LIGNE PRODUCTION 1 | SUIVI ET ANALYSE : PANNES, ETIQUETTES MTTR, MTBF ")
     with st.sidebar:
         selected = option_menu(menu_title=None,options=["ACCUEIL", "ANALYS MAINT.", "TPM", "ARRETS"],icons=["pc-display-horizontal", "graph-up-arrow", "tools", "layout-wtf"],
             menu_icon="cast",default_index=0,orientation="vertical",
@@ -184,13 +183,16 @@ if selected == "Secteur Traction/Torsion" :
                 "nav-link": { "--hover-color": "#93d6f5"},
                 "nav-link-selected": {"background-color": "Black"},})
         
-fig33 = px.bar(df_selection, x="Date", y="Arrêts", color="Machine", template = 'plotly')
+
+fig101 = px.histogram(df_selection, x="Durées (h)",y="Machine",color="Arrêts", template = 'plotly' )
+st.write(fig101)
+
+fig33 = px.bar(df_selection, x="Date", y="Arrêts", color="Machine", template = 'plotly', hover_name="Date")
 st.write(fig33)
 
 fig34 = px.bar(df_selection, x="Date", y="Durées (m)", color="Arrêts", template = 'plotly')
 st.write(fig34)
 
-fig101 = px.bar(df_selection, x="Machine",y="Durées (m)",color="Arrêts", template = 'plotly' )
-st.write(fig101)
+
 #-----------------------------------------------------------------------------
 
