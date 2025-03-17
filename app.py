@@ -4,7 +4,7 @@ import plotly.express as px
 from streamlit_option_menu import option_menu
 from PIL import Image
 from millify import millify
-
+import numpy as np
 
 
 
@@ -156,7 +156,7 @@ figpareto.update_layout(
     title="Pareto Diagram of Downtime Causes",
     yaxis=dict(title="Durations (minutes)", side="left"),
     yaxis2=dict(title="CP", overlaying="y", side="right", range=[0, 110]),
-    xaxis=dict(title="Arrêts", tickangle=-45),
+    xaxis=dict(title="Arrêts"),
     legend=dict(title="Legend"), 
     template="plotly_white"
 )
@@ -187,11 +187,13 @@ if selected == "Secteur Traction/Torsion" :
 fig101 = px.histogram(df_selection, x="Durées (h)",y="Machine",color="Arrêts", template = 'plotly' )
 st.write(fig101)
 
-fig33 = px.bar(df_selection, x="Date", y="Arrêts", color="Machine", template = 'plotly', hover_name="Date")
-st.write(fig33)
+a1, b1 = st.columns(2)
+
+fig33 = px.bar(df_selection, x="Date", y="Arrêts", color="Machine", template = 'plotly', hover_name="Durées (m)")
+a1.write(fig33)
 
 fig34 = px.bar(df_selection, x="Date", y="Durées (m)", color="Arrêts", template = 'plotly')
-st.write(fig34)
+b1.write(fig34)
 
 
 #-----------------------------------------------------------------------------
