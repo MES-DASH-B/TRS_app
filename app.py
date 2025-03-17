@@ -133,6 +133,38 @@ fig26.update_layout({
                                     'plot_bgcolor': 'rgba(0, 0, 0, 0)',
                                     'paper_bgcolor': 'rgba(0, 0, 0, 0)',})
 coll300.write(fig26)
+
+df1= pd.read_excel(
+    io='CALCUL_TRS.xlsx',
+    engine='openpyxl',
+    sheet_name='Pareto',
+    skiprows=4,
+    usecols='B:D',
+    nrows=15,
+)
+df1["PC"] = (df1["PC"] * 100).round(0).astype(int)
+
+figpareto = px.bar(df1, x="Arrêts", y="Durées (m)", text="Durées (m)", 
+             labels={"Durées (m)": "Durations (minutes)", "Arrêts": "Causes of Downtime"},
+             color_discrete_sequence=px.colors.sequential.Blugrn_r)
+figpareto.add_scatter(x=df1["Arrêts"], y=df1["PC"], mode="lines+markers+text", 
+                name="Cumulative %", text=df1["PC"], textposition="top center",
+                line=dict(color="red", width=2),
+                yaxis="y2")
+
+figpareto.update_layout(
+    title="Pareto Diagram of Downtime Causes",
+    yaxis=dict(title="Durations (minutes)", side="left"),
+    yaxis2=dict(title="Cumulative Percentage", overlaying="y", side="right", range=[0, 110]),
+    xaxis=dict(title="Arrêts", tickangle=-45),
+    legend=dict(title="Legend"), 
+    template="plotly_white"
+)
+
+figpareto.add_hline(y=80, line_dash="dash", line_color="green", 
+              annotation_text="80% Threshold", annotation_position="right",
+              yref="y2")
+st.write(figpareto)
 st.markdown("----") 
 
 with st.sidebar:
