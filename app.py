@@ -162,7 +162,7 @@ figpareto.update_layout(
 )
 
 figpareto.add_hline(y=80, line_dash="dash", line_color="green", 
-              annotation_text="80% Threshold", annotation_position="right",
+               annotation_position="right",
               yref="y2")
 st.write(figpareto)
 st.markdown("----") 
