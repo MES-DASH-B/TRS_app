@@ -13,8 +13,8 @@ image = Image.open('image.jpg')
 st.image(image, width = 250)
 
 #st.header ("Analyse TRS SHINKO & MS20")
-st.subheader ("Analyse Taux de Rendement Synthétique")
-#st.subheadertitle ("Accueil")
+st.subheader  ("Analyse Taux de Rendement Synthétique")
+#st.subheader ("Accueil")
 
 df= pd.read_excel(
     io='CALCUL_TRS.xlsx',
@@ -22,7 +22,7 @@ df= pd.read_excel(
     sheet_name='Arrêts',
     skiprows=4,
     usecols='B:H',
-    nrows=74,
+    nrows=100,
 )
 
 
