@@ -14,7 +14,7 @@ st.image(image, width = 250)
 
 #st.header ("Analyse TRS SHINKO & MS20")
 st.title ("Analyse Taux de Rendement Synthétique")
-st.subheader ("Accueil")
+#st.subheader ("Accueil")
 
 df= pd.read_excel(
     io='CALCUL_TRS.xlsx',
