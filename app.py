@@ -240,7 +240,7 @@ if selected == "ANALYS MAINT.":
     figTRS = px.line(df3, x="Date",y=df3["TRS 1"],color="Machine",template = 'plotly' )
     st.write(figTRS)
     
-    figqté = px.area(df3, x="Date",y=df3["Quantité E1+E2"],color="Machine", template = 'plotly' )
+    figqté = px.bar(df3, x="Date",y=df3["Quantité E1+E2"],color="Machine", template = 'plotly' )
     st.write(figqté)
     
     figtrs1=go.Figure()
