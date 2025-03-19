@@ -341,6 +341,17 @@ if selected == "ANALYS MAINT.":
     st.write(figtrs1)
 
 
+    
+    df5= pd.read_excel(
+        io='CALCUL_TRS.xlsx',
+        engine='openpyxl',
+        sheet_name='Arrêts',
+        skiprows=4,
+        usecols='B:H',
+        nrows=100,
+        )
+    figsun = px.sunburst(df5,path=['Machine', 'pds','Date', 'Arrêts'], values='Durées (m)', height=800, color_discrete_sequence=px.colors.sequential.Blugrn_r)
+    st.write(figsun)
 
 
 
