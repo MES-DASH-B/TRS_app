@@ -257,13 +257,13 @@ if selected == "ANALYS MAINT.":
     col11, col21, col31, col41 = st.columns(4)
 
     with col11:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{Objectifs1}</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">Objectif de production</p><p class="metric-value">{Objectifs1}</p></div>""",unsafe_allow_html=True)
     with col21:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{Qté1}</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">Quantité produite</p><p class="metric-value">{Qté1}</p></div>""",unsafe_allow_html=True)
     with col31:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{Écart1}</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">Écart production</p><p class="metric-value">{Écart1}</p></div>""",unsafe_allow_html=True)
     with col41:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{trs1} %</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">TRS machine</p><p class="metric-value">{trs1} %</p></div>""",unsafe_allow_html=True)
 
 
     Objectifs2= int(df_filtered["Objectif2"].sum())
@@ -275,13 +275,13 @@ if selected == "ANALYS MAINT.":
     col110, col210, col310, col410 = st.columns(4)
 
     with col110:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{Objectifs2}</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">Objectif de production</p><p class="metric-value">{Objectifs2}</p></div>""",unsafe_allow_html=True)
     with col210:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{Qté2}</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">Quantité produite</p><p class="metric-value">{Qté2}</p></div>""",unsafe_allow_html=True)
     with col310:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{Écart2}</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">Écart production</p><p class="metric-value">{Écart2}</p></div>""",unsafe_allow_html=True)
     with col410:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{trs2} %</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">TRS machine</p><p class="metric-value">{trs2} %</p></div>""",unsafe_allow_html=True)
         
 
     Objectifs3= int(df_filtered["Objectif3"].sum())
@@ -293,13 +293,13 @@ if selected == "ANALYS MAINT.":
     col111, col211, col311, col411 = st.columns(4)
     
     with col111:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{Objectifs3}</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">Objectif de production</p><p class="metric-value">{Objectifs3}</p></div>""",unsafe_allow_html=True)
     with col211:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{Qté3}</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">Quantité produite</p><p class="metric-value">{Qté3}</p></div>""",unsafe_allow_html=True)
     with col311:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{Écart3}</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">Écart production</p><p class="metric-value">{Écart3}</p></div>""",unsafe_allow_html=True)
     with col411:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{trs3} %</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label"TRS machine</p><p class="metric-value">{trs3} %</p></div>""",unsafe_allow_html=True)
 
 
     Objectifs4= int(df_filtered["Objectif4"].sum())
@@ -311,13 +311,13 @@ if selected == "ANALYS MAINT.":
     col112, col212, col312, col412 = st.columns(4)
     
     with col112:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{Objectifs4}</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">Objectif de production</p><p class="metric-value">{Objectifs4}</p></div>""",unsafe_allow_html=True)
     with col212:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{Qté4}</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">Quantité produite</p><p class="metric-value">{Qté4}</p></div>""",unsafe_allow_html=True)
     with col312:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{Écart4}</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">Écart production</p><p class="metric-value">{Écart4}</p></div>""",unsafe_allow_html=True)
     with col412:
-        st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{trs4} %</p></div>""",unsafe_allow_html=True)
+        st.markdown(f"""<div class="metric-container"><p class="metric-label">TRS machine</p><p class="metric-value">{trs4} %</p></div>""",unsafe_allow_html=True)
 
 
 
