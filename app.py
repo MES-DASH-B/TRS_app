@@ -319,26 +319,12 @@ if selected == "ANALYS MAINT.":
     with col412:
         st.markdown(f"""<div class="metric-container"><p class="metric-label">TRS machine</p><p class="metric-value">{trs4} %</p></div>""",unsafe_allow_html=True)
 
+    df3["TRS 1"] = (df3["TRS 1"] * 100).round(0).astype(int)
+    figTRS = px.line(df3, x="Date",y=df3["TRS 1"],color="Machine",template = 'plotly', text="TRS 1")
+    st.write(figTRS)
 
-
-
-
-
-
-
-
-
-
-
-    figtrs1=go.Figure()
-    
-    figtrs1.add_trace(go.Scatter(x=df4["Semaine"], y=df4["TRS1"], mode='lines', name='Line chart', line=dict(color='blue',width=2)))
-    
-    figtrs1.add_trace(go.Bar(x=df4["Semaine"], y=df4["Qté produite1"], name='Histogramt', marker=dict(color='orange'), yaxis='y2'))
-    
-    figtrs1.update_layout(title="line chart with scaled histogram", xaxis_title="Semainer", yaxis=dict(title="Line chart values", side="left"), yaxis2=dict(title="histogram values(large scale)", overlaying="y", side="right",showgrid=False),barmode='overlay')
-    #figtrs1.show()
-    st.write(figtrs1)
+    figqté = px.bar(df3, x="Date",y=df3["Quantité E1+E2"],color="Machine", template = 'plotly' )
+    st.write(figqté)
 
 
     
@@ -350,27 +336,25 @@ if selected == "ANALYS MAINT.":
         usecols='B:H',
         nrows=100,
         )
-    figsun = px.sunburst(df5,path=['Machine', 'pds','Date', 'Arrêts'], values='Durées (m)', height=800, color_discrete_sequence=px.colors.sequential.Blugrn_r)
-    st.write(figsun)
-
-
-
-
-
-
-
-
-    df3["TRS 1"] = (df3["TRS 1"] * 100).round(0).astype(int)
-    figTRS = px.line(df3, x="Date",y=df3["TRS 1"],color="Machine",template = 'plotly' )
-    st.write(figTRS)
-    
-    figqté = px.bar(df3, x="Date",y=df3["Quantité E1+E2"],color="Machine", template = 'plotly' )
-    st.write(figqté)
     
     
+    colsun1, colsun2 = st.columns(2)
+    figsun = px.sunburst(df5,path=['Machine', 'pds','Date', 'Arrêts'], values='Durées (m)', height=800, color_discrete_sequence=px.colors.sequential.Brwnyl_r)
+    colsun1.write(figsun)
+
+    figref = px.sunburst(df2,path=['Machine ', 'Ref','Semaine','Qté produite'], values='TRS', height=800, color_discrete_sequence=px.colors.sequential.Redor_r)
+    colsun2.write(figref)
     
-    figS = px.line(df2, x="Semaine",y="TRS",color="Machine ", template = 'plotly' )
+    figS = px.line(df2, x="Semaine",y="TRS",color="Machine ", template = 'plotly', text="TRS" )
     st.write(figS)
     
     
-        
+    figtrs1=go.Figure()
+    
+    figtrs1.add_trace(go.Scatter(x=df4["Semaine"], y=df4["TRS1"], mode='lines', name='Line chart', line=dict(color='blue',width=2)))
+    
+    figtrs1.add_trace(go.Bar(x=df4["Semaine"], y=df4["Qté produite1"], name='Histogramt', marker=dict(color='orange'), yaxis='y2'))
+    
+    figtrs1.update_layout(title="line chart with scaled histogram", xaxis_title="Semainer", yaxis=dict(title="Line chart values", side="left"), yaxis2=dict(title="histogram values(large scale)", overlaying="y", side="right",showgrid=False),barmode='overlay')
+    #figtrs1.show()
+    st.write(figtrs1) 
