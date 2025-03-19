@@ -348,6 +348,8 @@ if selected == "ANALYS MAINT.":
     figS = px.line(df2, x="Semaine",y="TRS",color="Machine ", template = 'plotly', text="TRS" )
     st.write(figS)
     
+    fighist = px.histogram(df2, x="Qté produite",y="Machine ",color="Ref", template = 'plotly' )
+    st.write(fighist)
     
     figtrs1=go.Figure()
     
