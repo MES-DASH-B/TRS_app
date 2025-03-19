@@ -228,12 +228,12 @@ if selected == "ANALYS MAINT.":
     
     #st.dataframe(df2)
     
-    Semaine = st.sidebar.multiselect(
-        "Choisir la semaine:",
-        options = df4["Semaine"].unique(),
-        default = df4["Semaine"].unique())
+    #Semaine = st.sidebar.multiselect(
+    #    "Choisir la semaine:",
+    #    options = df4["Semaine"].unique(),
+    #    default = df4["Semaine"].unique())
     
-    df4_selection = df4.query("Semaine == @Semaine")
+    #df4_selection = df4.query("Semaine == @Semaine")
     
         # Get unique values from "Semaine" column
     semaines = df4["Semaine"].unique()
