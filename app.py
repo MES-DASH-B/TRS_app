@@ -27,13 +27,198 @@ load_css("style.css")
 
 
 with st.sidebar:
-    selected = option_menu(menu_title=None,options=["ACCUEIL", "ANALYS MAINT.", "TPM", "ARRETS"],icons=["pc-display-horizontal", "graph-up-arrow", "tools", "layout-wtf"],
+    selected = option_menu(menu_title=None,options=["ACCUEIL TRS","ACCUEIL ARRETS", "ANALYS MAINT.", "TPM", "ARRETS"],icons=["speedometer","tools", "graph-up-arrow", "pc-display-horizontal", "layout-wtf"],
         menu_icon="cast",default_index=0,orientation="vertical",
         styles={
             "nav-link": { "--hover-color": "#93d6f5"},
             "nav-link-selected": {"background-color": "Black"},})
-        
-if selected == "ACCUEIL":
+    
+if selected == "ACCUEIL TRS":
+    
+    df4= pd.read_excel(
+        io='CALCUL_TRS.xlsx',
+        engine='openpyxl',
+        sheet_name='DétailTRS',
+        skiprows=4,
+        usecols='B:AF',
+        nrows=150,
+        )
+   
+    dfwf= pd.read_excel(
+            io='CALCUL_TRS.xlsx',
+            engine='openpyxl',
+            sheet_name='waterfall',
+            skiprows=4,
+            usecols='B:AA',
+            nrows=200,
+            )
+
+    # Interface utilisateur avec Streamlit
+    #st.title("Analyse des pertes TRS en Waterfall")
+
+    # Filtres dans la barre latérale
+    #periodes = st.sidebar.multiselect("Sélectionner une ou plusieurs périodes", dfwf["Période"].unique(), default=dfwf["Période"].unique())
+    #semaines = st.sidebar.multiselect("Sélectionner une ou plusieurs semaines", dfwf["Semaine"].unique(), default=dfwf["Semaine"].unique())
+    #dates = st.sidebar.multiselect("Sélectionner une ou plusieurs dates", list(dfwf["Date"].unique()), default=list(dfwf["Date"].unique()))
+    
+    semaine_S = np.union1d(dfwf["Semaine"].unique(), df4["Semaine"].unique())
+    #semaine_S= dfwf["Semaine"].unique()
+    selected_semaine = st.sidebar.selectbox("Select a Week:", semaine_S)
+    dfwf_filtered = dfwf[dfwf["Semaine"] == selected_semaine]
+    filtered_data = df4[df4["Semaine"] == selected_semaine]
+    df_grouped = dfwf_filtered.groupby("Cause des pertes", as_index=False)["Pourcentage perte"].mean()
+
+
+    pie_data = pd.DataFrame({"Category": ["TRS1", "Pertes"],"Value": [filtered_data["TRS1"].values[0], filtered_data["cible"].values[0] - filtered_data["TRS1"].values[0]]})
+    fig24 = px.pie(pie_data, names="Category", values="Value", hole=0.4,  color_discrete_map={"TRS1": "green", "Pertes": "lightgray"})
+    fig24.update_traces(textposition='inside')
+    fig24.update_layout(title="MS20", uniformtext_minsize=18, uniformtext_mode='hide', height=410,font={'size': 15}, plot_bgcolor='rgba(0, 0, 0, 0)', paper_bgcolor='rgba(0, 0, 0, 0)')
+    
+    pie_data2 = pd.DataFrame({"Category2": ["TRS2", "Pertes"],"Value2": [filtered_data["TRS2"].values[0], filtered_data["cible"].values[0] - filtered_data["TRS2"].values[0]]})
+    fig25 = px.pie(pie_data2, names="Category2", values="Value2", hole=0.4,  color_discrete_map={"TRS2": "green", "Pertes": "lightgray"})
+    fig25.update_traces(textposition='inside')
+    fig25.update_layout(title="SHINKO 1",uniformtext_minsize=18, uniformtext_mode='hide', height=410,font={'size': 15}, plot_bgcolor='rgba(0, 0, 0, 0)', paper_bgcolor='rgba(0, 0, 0, 0)')
+    
+    pie_data3 = pd.DataFrame({"Category3": ["TRS3", "Pertes"],"Value3": [filtered_data["TRS3"].values[0], filtered_data["cible"].values[0] - filtered_data["TRS3"].values[0]]})
+    fig26 = px.pie(pie_data3, names="Category3", values="Value3", hole=0.4,  color_discrete_map={"TRS3": "green", "Pertes": "lightgray"})
+    fig26.update_traces(textposition='inside')
+    fig26.update_layout(title="SHINKO 2",uniformtext_minsize=18, uniformtext_mode='hide', height=410,font={'size': 15}, plot_bgcolor='rgba(0, 0, 0, 0)', paper_bgcolor='rgba(0, 0, 0, 0)')
+    
+    pie_data4 = pd.DataFrame({"Category4": ["TRS4", "Pertes"],"Value4": [filtered_data["TRS4"].values[0], filtered_data["cible"].values[0] - filtered_data["TRS4"].values[0]]})
+    fig27 = px.pie(pie_data4, names="Category4", values="Value4", hole=0.4,  color_discrete_map={"TRS4": "green", "Pertes": "lightgray"})
+    fig27.update_traces(textposition='inside')
+    fig27.update_layout(title="SHINKO3",uniformtext_minsize=18, uniformtext_mode='hide', height=410,font={'size': 15}, plot_bgcolor='rgba(0, 0, 0, 0)', paper_bgcolor='rgba(0, 0, 0, 0)')
+    
+    
+
+    # Display the pie chart in Streamlit
+    coll100, coll200, coll300, coll400 = st.columns([3, 3, 3, 3])
+    coll100.write(fig24)
+    coll200.write(fig25)
+    coll300.write(fig26)
+    coll400.write(fig27)
+    
+    #coll100, coll200,coll300 = st.columns([3,3,4])
+    #fig24 = px.pie (filtered_data ,  values="TRS1" ,color="cible", hole= .4,  color_discrete_sequence=px.colors.diverging.RdYlGn)
+    #fig24.update_traces(textposition='inside')
+    #fig24.update_layout({'uniformtext_minsize':18,'uniformtext_mode':'hide','height' : 410, 'font': {'size':15},'plot_bgcolor': 'rgba(0, 0, 0, 0)','paper_bgcolor': 'rgba(0, 0, 0, 0)',})
+    #coll100.write(fig24)
+    
+    # Filtrage des données
+    #df_filtered = dfwf[(df["Période"].isin(periodes)) & (dfwf["Semaine"].isin(semaines)) & (dfwf["Date"].isin(dates))]
+
+    # Calcul des moyennes par cause d'arrêt si plusieurs jours sont sélectionnés
+    #df_grouped = df_filtered.groupby("Cause des pertes", as_index=False)["Pourcentage perte"].mean()
+
+    # Ajouter le TRS initial à 100%
+    base_trs = 100
+    values = [base_trs] + [-p for p in df_grouped["Pourcentage perte"]]
+    labels = ["TRS 100%"] + list(df_grouped["Cause des pertes"])
+    measurements = ["absolute"] + ["relative"] * len(df_grouped)
+
+    # Créer le graphique Waterfall
+    fig = go.Figure(go.Waterfall(
+        name="Pertes TRS",
+        orientation="v",
+        measure=measurements,
+        x=labels,
+        y=values,
+        text=[f"{v:.1f}%" for v in values],
+        textposition="outside"
+    ))
+
+    fig.update_layout(
+        title="Pertes TRS MS20 par cause d'arrêt",
+        xaxis_title="Causes d'arrêt",
+        yaxis_title="Pourcentage de perte (%)",
+        height=550,
+        showlegend=False
+    )
+    #------------------------------------------------------------------------------------ Start waterfall Shinko 1
+    df_grouped1 = dfwf_filtered.groupby("Cause des pertes1", as_index=False)["Pourcentage perte1"].mean()
+    base_trs1 = 100
+    values1 = [base_trs1] + [-p for p in df_grouped1["Pourcentage perte1"]]
+    labels1 = ["TRS1 100%"] + list(df_grouped1["Cause des pertes1"])
+    measurements1 = ["absolute"] + ["relative"] * len(df_grouped1)
+    
+    fig1 = go.Figure(go.Waterfall(
+        name="Pertes TRS1",
+        orientation="v",
+        measure=measurements1,
+        x=labels1,
+        y=values1,
+        text=[f"{v:.1f}%" for v in values1],
+        textposition="outside"
+    ))
+    
+    fig1.update_layout(
+        title="Pertes TRS SHINKO 1 par cause d'arrêt",
+        xaxis_title="Causes d'arrêt",
+        yaxis_title="Pourcentage de perte (%)",
+        height=550,
+        showlegend=False
+    )
+    #____________________________________________________________________________________ End waterfall shinko 1
+    
+    #------------------------------------------------------------------------------------ Start waterfall Shinko 2
+    df_grouped2 = dfwf_filtered.groupby("Cause des pertes2", as_index=False)["Pourcentage perte2"].mean()
+    base_trs2 = 100
+    values2 = [base_trs2] + [-p for p in df_grouped2["Pourcentage perte2"]]
+    labels2 = ["TRS2 100%"] + list(df_grouped2["Cause des pertes2"])
+    measurements2 = ["absolute"] + ["relative"] * len(df_grouped2)
+    
+    fig2 = go.Figure(go.Waterfall(
+        name="Pertes TRS2",
+        orientation="v",
+        measure=measurements2,
+        x=labels2,
+        y=values2,
+        text=[f"{v:.1f}%" for v in values2],
+        textposition="outside"
+    ))
+    
+    fig2.update_layout(
+        title="Pertes TRS SHINKO 2 par cause d'arrêt",
+        xaxis_title="Causes d'arrêt",
+        yaxis_title="Pourcentage de perte (%)",
+        height=550,
+        showlegend=False
+    )
+    #____________________________________________________________________________________ End waterfall shinko 2
+    
+    #------------------------------------------------------------------------------------ Start waterfall Shinko 3
+    df_grouped3 = dfwf_filtered.groupby("Cause des pertes3", as_index=False)["Pourcentage perte3"].mean()
+    base_trs3 = 100
+    values3 = [base_trs3] + [-p for p in df_grouped3["Pourcentage perte3"]]
+    labels3 = ["TRS3 100%"] + list(df_grouped3["Cause des pertes3"])
+    measurements3 = ["absolute"] + ["relative"] * len(df_grouped3)
+    
+    fig3 = go.Figure(go.Waterfall(
+        name="Pertes TRS3",
+        orientation="v",
+        measure=measurements3,
+        x=labels3,
+        y=values3,
+        text=[f"{v:.1f}%" for v in values3],
+        textposition="outside"
+    ))
+    
+    fig3.update_layout(
+        title="Pertes TRS SHINKO 3 par cause d'arrêt",
+        xaxis_title="Causes d'arrêt",
+        yaxis_title="Pourcentage de perte (%)",
+        height=550,
+        showlegend=False
+    )
+    #____________________________________________________________________________________ End waterfall shinko 3
+    # Afficher le graphique
+    col11, col21, col22, col23= st.columns(4)
+    col11.plotly_chart(fig)
+    col21.plotly_chart(fig1)
+    col22.plotly_chart(fig2)
+    col23.plotly_chart(fig3)
+            
+if selected == "ACCUEIL ARRETS":
     
     df= pd.read_excel(
         io='CALCUL_TRS.xlsx',
@@ -360,3 +545,4 @@ if selected == "ANALYS MAINT.":
     figtrs1.update_layout(title="line chart with scaled histogram", xaxis_title="Semainer", yaxis=dict(title="Line chart values", side="left"), yaxis2=dict(title="histogram values(large scale)", overlaying="y", side="right",showgrid=False),barmode='overlay')
     #figtrs1.show()
     st.write(figtrs1) 
+
