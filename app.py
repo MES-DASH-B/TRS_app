@@ -505,10 +505,11 @@ if selected == "ANALYS MAINT.":
         st.markdown(f"""<div class="metric-container"><p class="metric-label">TRS machine</p><p class="metric-value">{trs4} %</p></div>""",unsafe_allow_html=True)
 
     df3["TRS 1"] = (df3["TRS 1"] * 100).round(0).astype(int)
-    figTRS = px.line(df3, x="Date",y=df3["TRS 1"],color="Machine",template = 'plotly', text="TRS 1")
+    figTRS = px.line(df3, x="Date",y=df3["TRS 1"],color="Machine",color_discrete_sequence=px.colors.sequential.Burgyl, text="TRS 1")
+    figTRS.update_traces(line=dict(width=5), textposition="top left", textfont=dict(size=16))
     st.write(figTRS)
 
-    figqté = px.bar(df3, x="Date",y=df3["Quantité E1+E2"],color="Machine", template = 'plotly' )
+    figqté = px.bar(df3, x="Date",y=df3["Quantité E1+E2"],color="Machine", color_discrete_sequence=px.colors.sequential.Blues_r )
     st.write(figqté)
 
 
@@ -524,13 +525,14 @@ if selected == "ANALYS MAINT.":
     
     
     colsun1, colsun2 = st.columns(2)
-    figsun = px.sunburst(df5,path=['Machine', 'pds','Date', 'Arrêts'], values='Durées (m)', height=800, color_discrete_sequence=px.colors.sequential.Brwnyl_r)
+    figsun = px.sunburst(df5,path=['Machine', 'pds','Date', 'Arrêts'], values='Durées (m)', height=800, color_discrete_sequence=px.colors.sequential.Bluyl_r)
     colsun1.write(figsun)
 
-    figref = px.sunburst(df2,path=['Machine ', 'Ref','Semaine','Qté produite'], values='TRS', height=800, color_discrete_sequence=px.colors.sequential.Redor_r)
+    figref = px.sunburst(df2,path=['Machine ', 'Ref','Semaine','Qté produite'], values='TRS', height=800, color_discrete_sequence=px.colors.sequential.Blues_r)
     colsun2.write(figref)
     
-    figS = px.line(df2, x="Semaine",y="TRS",color="Machine ", template = 'plotly', text="TRS" )
+    figS = px.line(df2, x="Semaine",y="TRS",color="Machine ", color_discrete_sequence=px.colors.sequential.Blues_r, text="TRS" )
+    figS.update_traces(line=dict(width=6), textposition="top center", textfont=dict(size=16))
     st.write(figS)
     
     fighist = px.histogram(df2, x="Qté produite",y="Machine ",color="Ref", template = 'plotly' )
