@@ -35,23 +35,11 @@ with st.sidebar:
     
 if selected == "ACCUEIL TRS":
     
-    df4= pd.read_excel(
-        io='CALCUL_TRS.xlsx',
-        engine='openpyxl',
-        sheet_name='DétailTRS',
-        skiprows=4,
-        usecols='B:AF',
-        nrows=150,
-        )
+    df4= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='DétailTRS',skiprows=4,usecols='B:AF',nrows=150,)
    
-    dfwf= pd.read_excel(
-            io='CALCUL_TRS.xlsx',
-            engine='openpyxl',
-            sheet_name='waterfall',
-            skiprows=4,
-            usecols='B:AA',
-            nrows=200,
-            )
+    dfwf= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='waterfall',skiprows=4,usecols='B:AA',nrows=200,)
+    
+    df2= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='Semaine',skiprows=4,usecols='B:I',nrows=100,)
 
     # Interface utilisateur avec Streamlit
     #st.title("Analyse des pertes TRS en Waterfall")
@@ -66,7 +54,7 @@ if selected == "ACCUEIL TRS":
     selected_semaine = st.sidebar.selectbox("Select a Week:", semaine_S)
     dfwf_filtered = dfwf[dfwf["Semaine"] == selected_semaine]
     filtered_data = df4[df4["Semaine"] == selected_semaine]
-    df_grouped = dfwf_filtered.groupby("Cause des pertes", as_index=False)["Pourcentage perte"].mean()
+    df_grouped = dfwf_filtered.groupby("Cause des pertes", as_index=False)["Pourcentage perte"].sun()/4
 
 
     pie_data = pd.DataFrame({"Category": ["TRS1", "Pertes"],"Value": [filtered_data["TRS1"].values[0], filtered_data["cible"].values[0] - filtered_data["TRS1"].values[0]]})
@@ -217,6 +205,10 @@ if selected == "ACCUEIL TRS":
     col21.plotly_chart(fig1)
     col22.plotly_chart(fig2)
     col23.plotly_chart(fig3)
+
+    figS = px.line(df2, x="Semaine",y="TRS",color="Machine ", color_discrete_sequence=px.colors.sequential.Blues_r, text="TRS", height=700 )
+    figS.update_traces(line=dict(width=6), textposition="top center", textfont=dict(size=16))
+    st.write(figS)
             
 if selected == "ACCUEIL ARRETS":
     
@@ -505,7 +497,7 @@ if selected == "ANALYS MAINT.":
         st.markdown(f"""<div class="metric-container"><p class="metric-label">TRS machine</p><p class="metric-value">{trs4} %</p></div>""",unsafe_allow_html=True)
 
     df3["TRS 1"] = (df3["TRS 1"] * 100).round(0).astype(int)
-    figTRS = px.line(df3, x="Date",y=df3["TRS 1"],color="Machine",color_discrete_sequence=px.colors.sequential.Burgyl, text="TRS 1")
+    figTRS = px.line(df3, x="Date",y=df3["TRS 1"],color="Machine",color_discrete_sequence=px.colors.sequential.Reds_r, text="TRS 1")
     figTRS.update_traces(line=dict(width=5), textposition="top left", textfont=dict(size=16))
     st.write(figTRS)
 
@@ -531,9 +523,7 @@ if selected == "ANALYS MAINT.":
     figref = px.sunburst(df2,path=['Machine ', 'Ref','Semaine','Qté produite'], values='TRS', height=800, color_discrete_sequence=px.colors.sequential.Blues_r)
     colsun2.write(figref)
     
-    figS = px.line(df2, x="Semaine",y="TRS",color="Machine ", color_discrete_sequence=px.colors.sequential.Blues_r, text="TRS" )
-    figS.update_traces(line=dict(width=6), textposition="top center", textfont=dict(size=16))
-    st.write(figS)
+    
     
     fighist = px.histogram(df2, x="Qté produite",y="Machine ",color="Ref", template = 'plotly' )
     st.write(fighist)
