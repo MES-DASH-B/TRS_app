@@ -367,7 +367,7 @@ if selected == "ACCUEIL ARRETS":
 
     a1, b1 = st.columns(2)
 
-    fig33 = px.bar(df_selection, x="Date", y="Arrêts", color="Machine", template = 'plotly', hover_name="Durées (m)")
+    fig33 = px.bar(df_selection, x="Date", y="Arrêts", color="Machine", color_discrete_sequence=px.colors.sequential.Blues_r, hover_name="Durées (m)")
     fig33.update_layout(
         bargap=0.2,  # Reduce gap to make bars thicker
         bargroupgap=0.05  # Space between grouped bars
@@ -502,7 +502,7 @@ if selected == "ANALYS MAINT.":
         st.markdown(f"""<div class="metric-container"><p class="metric-label">TRS machine</p><p class="metric-value">{trs4} %</p></div>""",unsafe_allow_html=True)
 
     df3["TRS 1"] = (df3["TRS 1"] * 100).round(0).astype(int)
-    figTRS = px.line(df3, x="Date",y=df3["TRS 1"],color="Machine",color_discrete_sequence=px.colors.sequential.Reds_r, text="TRS 1")
+    figTRS = px.line(df3, x="Date",y=df3["TRS 1"],color="Machine",color_discrete_sequence=px.colors.sequential.Blues_r, text="TRS 1")
     figTRS.update_traces(line=dict(width=5), textposition="top left", textfont=dict(size=16))
     st.write(figTRS)
 
@@ -530,14 +530,14 @@ if selected == "ANALYS MAINT.":
     
     
     
-    fighist = px.histogram(df2, x="Qté produite",y="Machine ",color="Ref", template = 'plotly' )
+    fighist = px.histogram(df2, x="Qté produite",y="Machine ",color="Ref", color_discrete_sequence=px.colors.sequential.GnBu_r )
     st.write(fighist)
     
     figtrs1=go.Figure()
     
     figtrs1.add_trace(go.Scatter(x=df4["Semaine"], y=df4["TRS1"], mode='lines', name='Line chart', line=dict(color='blue',width=2)))
     
-    figtrs1.add_trace(go.Bar(x=df4["Semaine"], y=df4["Qté produite1"], name='Histogramt', marker=dict(color='orange'), yaxis='y2'))
+    figtrs1.add_trace(go.Bar(x=df4["Semaine"], y=df4["Qté produite1"], name='Histogramt', marker=dict(color='gray'), yaxis='y2'))
     
     figtrs1.update_layout(title="line chart with scaled histogram", xaxis_title="Semainer", yaxis=dict(title="Line chart values", side="left"), yaxis2=dict(title="histogram values(large scale)", overlaying="y", side="right",showgrid=False),barmode='overlay')
     #figtrs1.show()
