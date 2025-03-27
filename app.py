@@ -295,7 +295,7 @@ if selected == "ACCUEIL ARRETS":
         )
 
     coll100, coll200,coll300 = st.columns([3,3,4])
-    fig24 = px.pie (df_selection,  values="Durées (h)" , names="Machine", color="Machine", hole= .4,  color_discrete_sequence=px.colors.diverging.RdYlGn)
+    fig24 = px.pie (df_selection,  values="Durées (h)" , names="Machine", color="Machine", hole= .4,  color_discrete_sequence=px.colors.diverging.RdBu_r)
     fig24.update_traces(textposition='inside')
     fig24.update_layout({
                                         'uniformtext_minsize':18,'uniformtext_mode':'hide',
@@ -304,7 +304,7 @@ if selected == "ACCUEIL ARRETS":
                                         'paper_bgcolor': 'rgba(0, 0, 0, 0)',})
     coll100.write(fig24)
 
-    fig25 = px.pie (df_selection,  values="Durées (h)" , names="Équipe", color="Équipe", hole= .4,  color_discrete_sequence=px.colors.sequential.Aggrnyl)
+    fig25 = px.pie (df_selection,  values="Durées (h)" , names="Équipe", color="Équipe", hole= .4,  color_discrete_sequence=px.colors.sequential.RdBu_r)
     fig25.update_traces(textposition='inside')
     fig25.update_layout({
                                         'uniformtext_minsize':18,'uniformtext_mode':'hide',
@@ -313,7 +313,7 @@ if selected == "ACCUEIL ARRETS":
                                         'paper_bgcolor': 'rgba(0, 0, 0, 0)',})
     coll200.write(fig25)
 
-    fig26 = px.pie (df_selection,  values="Durées (h)" , names="Arrêts", color="Arrêts", hole= .4,  color_discrete_sequence=px.colors.sequential.Blugrn_r)
+    fig26 = px.pie (df_selection,  values="Durées (h)" , names="Arrêts", color="Arrêts", hole= .4,  color_discrete_sequence=px.colors.sequential.RdBu_r)
     fig26.update_traces(textposition='inside')
     fig26.update_layout({
                                         'uniformtext_minsize':18,'uniformtext_mode':'hide',
