@@ -119,7 +119,7 @@ if selected == "ACCUEIL TRS":
             
     ))
     # Increase text & bar width
-    fig.update_traces(textfont=dict(size=16), width=0.8)  # Larger text & bars
+    fig.update_traces(textfont=dict(size=20), width=0.8)  # Larger text & bars
 
     fig.update_layout(
         title="Pertes TRS MS20 par cause d'arrêt",
