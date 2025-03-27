@@ -113,9 +113,14 @@ if selected == "ACCUEIL TRS":
         x=labels,
         y=values,
         text=[f"{v:.1f}%" for v in values],
-        textposition="outside"
+        textposition="outside",
+        connector=dict(line=dict(width=2)),  # Make connectors thicker
+        marker=dict(line=dict(width=3))  # Increase border thickness of bars
+            
     ))
-
+    # Increase text & bar width
+    fig.update_traces(textfont=dict(size=16), width=0.8)  # Larger text & bars
+    
     fig.update_layout(
         title="Pertes TRS MS20 par cause d'arrêt",
         xaxis_title="Causes d'arrêt",
