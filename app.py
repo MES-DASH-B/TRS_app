@@ -35,11 +35,11 @@ with st.sidebar:
     
 if selected == "ACCUEIL TRS":
     
-    df4= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='DétailTRS',skiprows=4,usecols='B:AF',nrows=150,)
+    df4= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='DétailTRS',skiprows=4,usecols='B:AF',nrows=500,)
    
-    dfwf= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='waterfall',skiprows=4,usecols='B:AA',nrows=200,)
+    dfwf= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='waterfall',skiprows=4,usecols='B:AA',nrows=500,)
     
-    df2= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='Semaine',skiprows=4,usecols='B:I',nrows=100,)
+    df2= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='Semaine',skiprows=4,usecols='B:I',nrows=500,)
 
     # Interface utilisateur avec Streamlit
     #st.title("Analyse des pertes TRS en Waterfall")
@@ -219,7 +219,7 @@ if selected == "ACCUEIL ARRETS":
         sheet_name='Arrêts',
         skiprows=4,
         usecols='B:H',
-        nrows=100,
+        nrows=500,
         )
 
     #st.dataframe(df)
@@ -382,7 +382,7 @@ if selected == "ANALYS MAINT.":
         sheet_name='Semaine',
         skiprows=4,
         usecols='B:I',
-        nrows=100,
+        nrows=500,
         )
         
     df3= pd.read_excel(
@@ -391,7 +391,7 @@ if selected == "ANALYS MAINT.":
         sheet_name='TRS Machine',
         skiprows=4,
         usecols='B:H',
-        nrows=150,
+        nrows=500,
         )
     
     df4= pd.read_excel(
@@ -400,7 +400,7 @@ if selected == "ANALYS MAINT.":
         sheet_name='DétailTRS',
         skiprows=4,
         usecols='B:AE',
-        nrows=150,
+        nrows=500,
         )
     
     
@@ -513,7 +513,7 @@ if selected == "ANALYS MAINT.":
         sheet_name='Arrêts',
         skiprows=4,
         usecols='B:H',
-        nrows=100,
+        nrows=500,
         )
     
     
