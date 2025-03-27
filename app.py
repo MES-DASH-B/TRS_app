@@ -54,8 +54,8 @@ if selected == "ACCUEIL TRS":
     selected_semaine = st.sidebar.selectbox("Select a Week:", semaine_S)
     dfwf_filtered = dfwf[dfwf["Semaine"] == selected_semaine]
     filtered_data = df4[df4["Semaine"] == selected_semaine]
-    df_grouped = dfwf_filtered.groupby("Cause des pertes", as_index=False)["Pourcentage perte"].sum()
-    df_grouped["Pourcentage perte"] = df_grouped["Pourcentage perte"].astype(float) / 4
+    df_grouped = dfwf_filtered.groupby("Cause des pertes", as_index=False)["Pourcentage perte"].mean()
+    #df_grouped["Pourcentage perte"] = df_grouped["Pourcentage perte"].astype(float) / 4
 
 
     pie_data = pd.DataFrame({"Category": ["TRS1", "Pertes"],"Value": [filtered_data["TRS1"].values[0], filtered_data["cible"].values[0] - filtered_data["TRS1"].values[0]]})
