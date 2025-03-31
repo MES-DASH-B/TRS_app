@@ -143,7 +143,7 @@ if selected == "ACCUEIL TRS":
         text=[f"{v:.1f}%" for v in values1],
         textposition="outside"
     ))
-    
+    fig1.update_traces(textfont=dict(size=16, family="Arial Black", color="dimgray"), width=0.8) # Larger text & bars
     fig1.update_layout(
         title="Pertes TRS SHINKO 1 par cause d'arrêt",
         xaxis_title="Causes d'arrêt",
@@ -169,7 +169,7 @@ if selected == "ACCUEIL TRS":
         text=[f"{v:.1f}%" for v in values2],
         textposition="outside"
     ))
-    
+    fig2.update_traces(textfont=dict(size=16, family="Arial Black", color="dimgray"), width=0.8) # Larger text & bars
     fig2.update_layout(
         title="Pertes TRS SHINKO 2 par cause d'arrêt",
         xaxis_title="Causes d'arrêt",
@@ -195,7 +195,7 @@ if selected == "ACCUEIL TRS":
         text=[f"{v:.1f}%" for v in values3],
         textposition="outside"
     ))
-    
+    fig3.update_traces(textfont=dict(size=16, family="Arial Black", color="dimgray"), width=0.8) # Larger text & bars
     fig3.update_layout(
         title="Pertes TRS SHINKO 3 par cause d'arrêt",
         xaxis_title="Causes d'arrêt",
