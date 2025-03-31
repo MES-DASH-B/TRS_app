@@ -535,9 +535,9 @@ if selected == "ANALYS MAINT.":
     
     figtrs1=go.Figure()
     
-    figtrs1.add_trace(go.Scatter(x=df2["Semaine"], y=df2["TRS"], mode='lines', name='Line chart', line=dict(color='blue',width=2)))
+    figtrs1.add_trace(go.Scatter(x=df4["Semaine"], y=df4["TRS1"], mode='lines', name='Line chart', line=dict(color='blue',width=2)))
     
-    figtrs1.add_trace(go.Bar(x=df2["Semaine"], y=df2["Qté produite"], name='Histogramt', marker=dict(color='gray'), yaxis='y2'))
+    figtrs1.add_trace(go.Bar(x=df4["Semaine"], y=df4["Qté produite1"], name='Histogramt', marker=dict(color='gray'), yaxis='y2'))
     
     figtrs1.update_layout(title="line chart with scaled histogram", xaxis_title="Semainer", yaxis=dict(title="Line chart values", side="left"), yaxis2=dict(title="histogram values(large scale)", overlaying="y", side="right",showgrid=False),barmode='overlay')
     #figtrs1.show()
