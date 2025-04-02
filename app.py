@@ -114,79 +114,10 @@ if selected == "CAUSE ARRET":
 
 if selected == "MQTT":
 
-        #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-        
-        # ✅ Configuration MQTT
-        mqtt_broker = "192.168.0.230"
-        mqtt_topic = "NOVUS/device1/events"
-
-        # ✅ Variables globales
-        messages = []
-        last_update = None  
-
-        # ✅ Callback pour gérer les messages MQTT reçus
-        def on_message(client, userdata, msg):
-            global last_update
-
-            message = json.loads(msg.payload.decode())
-            messages.append(message)  
-            print(f"Message reçu: {message}")
-
-            timestamp = message.get("channels", {}).get("timestamp", None)
-            if timestamp:
-                utc_time = datetime.utcfromtimestamp(timestamp)
-                local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(pytz.timezone("Europe/Paris"))
-                last_update = local_time.strftime('%Y-%m-%d %H:%M:%S')
-                print(f"Timestamp mis à jour: {last_update}")
-
-        # ✅ Fonction pour démarrer MQTT
-        def start_mqtt():
-            client = mqtt.Client()
-            client.on_message = on_message
-            client.connect(mqtt_broker, 1883, 60)
-            client.subscribe(mqtt_topic)
-            client.loop_forever()
-
-        # ✅ Lancer MQTT dans un thread séparé
-        mqtt_thread = threading.Thread(target=start_mqtt, daemon=True)
-        mqtt_thread.start()
-
-        # ✅ Affichage des valeurs reçues
-        st.write(f"Broker MQTT: {mqtt_broker} | Topic: {mqtt_topic}")
         st.write("🔴 Données reçues en temps réel")
 
-        chd1_value_display = st.empty()
-        chd2_value_display = st.empty()
-        chd3_value_display = st.empty()
-        last_update_display = st.empty()
-        no_message_received_display = st.empty()
-
-        # ✅ Boucle pour afficher et stocker les messages MQTT
-        while True:
-            if messages:
-                latest_message = messages[-1]
-                chd1_value = latest_message.get("channels", {}).get("chd1_value", 0)
-                chd2_value = latest_message.get("channels", {}).get("chd2_value", 0)
-                chd3_value = latest_message.get("channels", {}).get("chd3_value", 0)
-
-                chd1_value_display.markdown(f"**Chd1 (Quantité totale):** {chd1_value}")
-                chd2_value_display.markdown(f"**Chd2 (Rebuts):** {chd2_value}")
-                chd3_value_display.markdown(f"**Chd3 (État machine):** {chd3_value}")
-
-                if last_update:
-                    last_update_display.markdown(f"**Dernière mise à jour:** {last_update}")
-                    no_message_received_display.empty()
-                else:
-                    last_update_display.markdown("**Dernière mise à jour:** N/A")
-
-            else:
-                no_message_received_display.markdown("**Aucun message reçu**.")
-
-            time.sleep(10)
-
+       
         #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
