@@ -6,7 +6,13 @@ from PIL import Image
 from millify import millify
 import numpy as np
 import plotly.graph_objects as go
-
+import paho.mqtt.client as mqtt
+import json
+import time
+import threading
+from datetime import datetime
+import pytz
+import os
 
 
 st.set_page_config (page_title= "POINT TRS", page_icon="📈", layout="wide")
@@ -27,13 +33,166 @@ load_css("style.css")
 
 
 with st.sidebar:
-    selected = option_menu(menu_title=None,options=["ACCUEIL TRS","ACCUEIL ARRETS", "ANALYS MAINT.", "TPM", "ARRETS"],icons=["speedometer","tools", "graph-up-arrow", "pc-display-horizontal", "layout-wtf"],
+    selected = option_menu(menu_title=None,options=["SUIVI TRS","SUIVI ARRETS", "ANALYS.", "CAUSE ARRET", "MQTT"],icons=["speedometer","tools", "graph-up-arrow", "pc-display-horizontal", "layout-wtf"],
         menu_icon="cast",default_index=0,orientation="vertical",
         styles={
             "nav-link": { "--hover-color": "#93d6f5"},
             "nav-link-selected": {"background-color": "Black"},})
-    
-if selected == "ACCUEIL TRS":
+ #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------   
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+if selected == "CAUSE ARRET":
+
+        if "cause_d_arret" not in st.session_state:
+            st.session_state["cause_d_arret"] = ""
+        if "commentaire" not in st.session_state:
+            st.session_state["commentaire"] = ""
+        if "duree_arret" not in st.session_state:
+            st.session_state["duree_arret"] = 0
+
+        # ✅ Interface Streamlit (Ajout des commentaires en premier)
+        st.title("📡 Monitoring MQTT - Novus DigiRail")
+
+        # ✅ Ajouter une zone de saisie pour les commentaires et la durée d'arrêt
+        st.subheader("📝 Enregistrement des Commentaires et Durée d'Arrêt")
+
+        cause_options = ["Manque main d'oeuvre", "Panne", "MN1, MN2, TPM", "Rupture appro.", "Mise en route", "Problème Qulité", "Changement de série", "Changement de botte", "Réglage", "Réunion, Pause"]
+        st.session_state["cause_d_arret"] = st.selectbox("🔹 Sélectionnez la cause d'arrêt", cause_options, index=0)
+        st.session_state["commentaire"] = st.text_area("💬 Ajoutez un commentaire", st.session_state["commentaire"])
+        st.session_state["duree_arret"] = st.number_input("⏳ Durée d'arrêt (en minutes)", min_value=0, value=st.session_state["duree_arret"])
+
+        excel_file = "data.xlsx"
+
+        # ✅ Fonction pour stocker les commentaires et réinitialiser les champs
+        def save_commentaire():
+            if st.session_state["cause_d_arret"] and st.session_state["commentaire"] and st.session_state["duree_arret"] >= 0:
+                # Vérifier si le fichier Excel existe
+                if not os.path.exists(excel_file):
+                    df = pd.DataFrame(columns=["Date", "Cause d'arrêt", "Commentaire", "Durée d'arrêt"])
+                    df.to_excel(excel_file, index=False)
+
+                # Charger l'ancien fichier
+                df = pd.read_excel(excel_file, sheet_name=None)
+                df_comments = df.get("Commentaires", pd.DataFrame(columns=["Date", "Cause d'arrêt", "Commentaire", "Durée d'arrêt"]))
+                
+                # Ajouter les nouvelles données
+                new_data = {
+                    "Date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    "Cause d'arrêt": st.session_state["cause_d_arret"],
+                    "Commentaire": st.session_state["commentaire"],
+                    "Durée d'arrêt": st.session_state["duree_arret"]
+                }
+                
+                df_comments = pd.concat([df_comments, pd.DataFrame([new_data])], ignore_index=True)
+
+                # Sauvegarde dans Excel
+                with pd.ExcelWriter(excel_file, engine="openpyxl", mode="a", if_sheet_exists="replace") as writer:
+                    df_comments.to_excel(writer, sheet_name="Commentaires", index=False)
+
+                # ✅ Réinitialisation des champs après l'enregistrement
+                st.session_state["cause_d_arret"] = "Cause 1"
+                st.session_state["commentaire"] = ""
+                st.session_state["duree_arret"] = 0
+
+                return True
+            return False
+
+        # ✅ Afficher un bouton pour enregistrer les commentaires
+        button_placeholder = st.empty()
+
+        if button_placeholder.button("✅ Enregistrer le Commentaire", use_container_width=True):
+            button_placeholder.empty()
+            st.markdown('<style>div.stButton>button{background-color: green;color: white;}</style>', unsafe_allow_html=True)
+            
+            success = save_commentaire()
+
+            if success:
+                st.success("✅ Commentaire et durée d'arrêt enregistrés avec succès!")
+            else:
+                st.error("❌ Erreur lors de l'enregistrement.")
+
+
+
+if selected == "MQTT":
+
+        #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+        
+        # ✅ Configuration MQTT
+        mqtt_broker = "192.168.0.230"
+        mqtt_topic = "NOVUS/device1/events"
+
+        # ✅ Variables globales
+        messages = []
+        last_update = None  
+
+        # ✅ Callback pour gérer les messages MQTT reçus
+        def on_message(client, userdata, msg):
+            global last_update
+
+            message = json.loads(msg.payload.decode())
+            messages.append(message)  
+            print(f"Message reçu: {message}")
+
+            timestamp = message.get("channels", {}).get("timestamp", None)
+            if timestamp:
+                utc_time = datetime.utcfromtimestamp(timestamp)
+                local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(pytz.timezone("Europe/Paris"))
+                last_update = local_time.strftime('%Y-%m-%d %H:%M:%S')
+                print(f"Timestamp mis à jour: {last_update}")
+
+        # ✅ Fonction pour démarrer MQTT
+        def start_mqtt():
+            client = mqtt.Client()
+            client.on_message = on_message
+            client.connect(mqtt_broker, 1883, 60)
+            client.subscribe(mqtt_topic)
+            client.loop_forever()
+
+        # ✅ Lancer MQTT dans un thread séparé
+        mqtt_thread = threading.Thread(target=start_mqtt, daemon=True)
+        mqtt_thread.start()
+
+        # ✅ Affichage des valeurs reçues
+        st.write(f"Broker MQTT: {mqtt_broker} | Topic: {mqtt_topic}")
+        st.write("🔴 Données reçues en temps réel")
+
+        chd1_value_display = st.empty()
+        chd2_value_display = st.empty()
+        chd3_value_display = st.empty()
+        last_update_display = st.empty()
+        no_message_received_display = st.empty()
+
+        # ✅ Boucle pour afficher et stocker les messages MQTT
+        while True:
+            if messages:
+                latest_message = messages[-1]
+                chd1_value = latest_message.get("channels", {}).get("chd1_value", 0)
+                chd2_value = latest_message.get("channels", {}).get("chd2_value", 0)
+                chd3_value = latest_message.get("channels", {}).get("chd3_value", 0)
+
+                chd1_value_display.markdown(f"**Chd1 (Quantité totale):** {chd1_value}")
+                chd2_value_display.markdown(f"**Chd2 (Rebuts):** {chd2_value}")
+                chd3_value_display.markdown(f"**Chd3 (État machine):** {chd3_value}")
+
+                if last_update:
+                    last_update_display.markdown(f"**Dernière mise à jour:** {last_update}")
+                    no_message_received_display.empty()
+                else:
+                    last_update_display.markdown("**Dernière mise à jour:** N/A")
+
+            else:
+                no_message_received_display.markdown("**Aucun message reçu**.")
+
+            time.sleep(10)
+
+        #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+if selected == "SUIVI TRS":
     
     df4= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='DétailTRS',skiprows=4,usecols='B:AF',nrows=500,)
    
@@ -215,16 +374,9 @@ if selected == "ACCUEIL TRS":
     figS.update_traces(line=dict(width=6), textposition="top center", textfont=dict(size=16))
     st.write(figS)
             
-if selected == "ACCUEIL ARRETS":
+if selected == "SUIVI ARRETS":
     
-    df= pd.read_excel(
-        io='CALCUL_TRS.xlsx',
-        engine='openpyxl',
-        sheet_name='Arrêts',
-        skiprows=4,
-        usecols='B:H',
-        nrows=500,
-        )
+    df= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='Arrêts',skiprows=4,usecols='B:H',nrows=500,)
 
     #st.dataframe(df)
 
@@ -251,75 +403,76 @@ if selected == "ACCUEIL ARRETS":
     # Arrange metrics in columns with the blue background style
     col1, col2, col3, col4 = st.columns(4)
 
-    with col1:
-        st.markdown(
-            f"""
-            <div class="metric-container">
-                <p class="metric-label">Nombre total des arrets</p>
-                <p class="metric-value">{Nombr_arrets}</p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+    with col1:st.markdown(f"""<div class="metric-container"><p class="metric-label">Nombre total des arrets</p><p class="metric-value">{Nombr_arrets}</p></div>""",unsafe_allow_html=True)
 
-    with col2:
-        st.markdown(
-            f"""
-            <div class="metric-container">
-                <p class="metric-label">Durées total des arrets</p>
-                <p class="metric-value">{Durées_arrets} h</p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+    with col2:st.markdown(f"""<div class="metric-container"><p class="metric-label">Durées total des arrets</p><p class="metric-value">{Durées_arrets} h</p></div>""",unsafe_allow_html=True)
 
-    with col3:
-        st.markdown(
-            f"""
-            <div class="metric-container">
-                <p class="metric-label">Dureée des arrets en jours</p>
-                <p class="metric-value">{Durée_arret_jr} Jours</p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    with col4:
-        st.markdown(
-            f"""
-            <div class="metric-container">
-                <p class="metric-label">Durée moyenne d'un arret</p>
-                <p class="metric-value">{moyenne} h</p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+    with col3:st.markdown(f"""<div class="metric-container"><p class="metric-label">Dureée des arrets en jours</p><p class="metric-value">{Durée_arret_jr} Jours</p></div>""",unsafe_allow_html=True)
 
-    coll100, coll200,coll300 = st.columns([3,3,4])
+    with col4:st.markdown(f"""<div class="metric-container"><p class="metric-label">Durée moyenne d'un arret</p><p class="metric-value">{moyenne} h</p></div>""",unsafe_allow_html=True)
+
+
+    coll101,coll100, coll200,coll300 = st.columns([3,3,3,4])
+
+    # Compter les arrêts par machine
+    arrets_par_machine = df_selection["Machine"].value_counts().reset_index()
+    arrets_par_machine.columns = ["Machine", "Nombre d'arrêts"]
+
+    # Nombre total d'arrêts
+    total_arrets = df_selection.shape[0]
+
+    # Interface Streamlit
+    #st.title("Analyse des Arrêts Machines")
+    #st.write(f"Nombre total d'arrêts : **{total_arrets}**")
+
+    # Création du pie chart (donut)
+    fig = px.pie(
+        arrets_par_machine,
+        names="Machine",
+        values="Nombre d'arrêts",
+        color_discrete_sequence=px.colors.diverging.RdBu_r,
+        hole=0.4  # Effet donut
+    )
+
+    # Masquer le nom des machines et afficher uniquement le nombre d'arrêts
+    fig.update_traces(texttemplate="%{value}", textfont_size=20)
+
+    # Ajouter le total des arrêts au centre avec le nombre au-dessus du mot "arrêts"
+    fig.update_layout(
+        title=dict(text="Répartition des arrêts par machine", font=dict(size=16),x=0.0, xanchor="left"),
+        annotations=[
+            dict(
+                text=f"<b>{total_arrets}</b><br>arrêts",  # Met le nombre en gras et "arrêts" en-dessous
+                x=0.5, y=0.5,  # Position centrale
+                font=dict(size=22),  # Taille et couleur du texte
+                showarrow=False
+            )
+        ], uniformtext_minsize=18,uniformtext_mode="hide",height=410,font=dict(size=15),plot_bgcolor="rgba(0, 0, 0, 0)",paper_bgcolor="rgba(0, 0, 0, 0)"
+    )
+
+    #st.plotly_chart(fig)
+    coll101.write(fig)
+
+
     fig24 = px.pie (df_selection,  values="Durées (h)" , names="Machine", color="Machine", hole= .4,  color_discrete_sequence=px.colors.diverging.RdBu_r)
     fig24.update_traces(textposition='inside')
-    fig24.update_layout({
-                                        'uniformtext_minsize':18,'uniformtext_mode':'hide',
-                                        'height' : 410, 'font': {'size':15},
-                                        'plot_bgcolor': 'rgba(0, 0, 0, 0)',
-                                        'paper_bgcolor': 'rgba(0, 0, 0, 0)',})
+    fig24.update_layout(
+        title=dict(text="Taux arrêts par machine", font=dict(size=16),x=0.0, xanchor="left"),
+        uniformtext_minsize=18,uniformtext_mode="hide",height=410,font=dict(size=15),plot_bgcolor="rgba(0, 0, 0, 0)",paper_bgcolor="rgba(0, 0, 0, 0)")
     coll100.write(fig24)
 
     fig25 = px.pie (df_selection,  values="Durées (h)" , names="Équipe", color="Équipe", hole= .4,  color_discrete_sequence=px.colors.sequential.RdBu_r)
     fig25.update_traces(textposition='inside')
-    fig25.update_layout({
-                                        'uniformtext_minsize':18,'uniformtext_mode':'hide',
-                                        'height' : 410, 'font': {'size':15},
-                                        'plot_bgcolor': 'rgba(0, 0, 0, 0)',
-                                        'paper_bgcolor': 'rgba(0, 0, 0, 0)',})
+    fig25.update_layout(
+        title=dict(text="Taux arrêts par équipe", font=dict(size=16),x=0.0, xanchor="left"),
+        uniformtext_minsize=18,uniformtext_mode="hide",height=410,font=dict(size=15),plot_bgcolor="rgba(0, 0, 0, 0)",paper_bgcolor="rgba(0, 0, 0, 0)")
     coll200.write(fig25)
 
     fig26 = px.pie (df_selection,  values="Durées (h)" , names="Arrêts", color="Arrêts", hole= .4,  color_discrete_sequence=px.colors.sequential.RdBu_r)
     fig26.update_traces(textposition='inside')
-    fig26.update_layout({
-                                        'uniformtext_minsize':18,'uniformtext_mode':'hide',
-                                        'height' : 410, 'font': {'size':15},
-                                        'plot_bgcolor': 'rgba(0, 0, 0, 0)',
-                                        'paper_bgcolor': 'rgba(0, 0, 0, 0)',})
+    fig26.update_layout(
+        title=dict(text="Taux arrêts par cause", font=dict(size=16),x=0.0, xanchor="left"),
+        uniformtext_minsize=18,uniformtext_mode="hide",height=410,font=dict(size=15),plot_bgcolor="rgba(0, 0, 0, 0)",paper_bgcolor="rgba(0, 0, 0, 0)")
     coll300.write(fig26)
 
     df1= pd.read_excel(
@@ -379,33 +532,12 @@ if selected == "ACCUEIL ARRETS":
 
 
 #-----------------------------------------------------------------------------
-if selected == "ANALYS MAINT.":
-    df2= pd.read_excel(
-        io='CALCUL_TRS.xlsx',
-        engine='openpyxl',
-        sheet_name='Semaine',
-        skiprows=4,
-        usecols='B:I',
-        nrows=500,
-        )
+if selected == "ANALYS.":
+    df2= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='Semaine',skiprows=4,usecols='B:I',nrows=500,)
         
-    df3= pd.read_excel(
-        io='CALCUL_TRS.xlsx',
-        engine='openpyxl',
-        sheet_name='TRS Machine',
-        skiprows=4,
-        usecols='B:H',
-        nrows=500,
-        )
+    df3= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='TRS Machine',skiprows=4,usecols='B:H',nrows=500,)
     
-    df4= pd.read_excel(
-        io='CALCUL_TRS.xlsx',
-        engine='openpyxl',
-        sheet_name='DétailTRS',
-        skiprows=4,
-        usecols='B:AE',
-        nrows=500,
-        )
+    df4= pd.read_excel(io='CALCUL_TRS.xlsx',engine='openpyxl',sheet_name='DétailTRS',skiprows=4,usecols='B:AE',nrows=500,)
     
     
     #st.dataframe(df2)
